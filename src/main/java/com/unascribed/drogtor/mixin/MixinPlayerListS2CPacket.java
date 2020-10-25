@@ -18,13 +18,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 //I'm sorry.
 @Mixin(PlayerListS2CPacket.class)
 public class MixinPlayerListS2CPacket {
-	private Map<UUID, String> drogtor$playerIdMap = new HashMap<>();
+	private final Map<UUID, String> drogtor$playerIdMap = new HashMap<>();
 
 	@Inject(method = "<init>(Lnet/minecraft/network/packet/s2c/play/PlayerListS2CPacket$Action;[Lnet/minecraft/server/network/ServerPlayerEntity;)V", at = @At("RETURN"))
 	private void cachePlayerIdsArray(PlayerListS2CPacket.Action action, ServerPlayerEntity[] players, CallbackInfo info) {
 		for (ServerPlayerEntity player : players) {
-			if (player instanceof DrogtorPlayer && ((DrogtorPlayer) player).drogtor$isActive()) {
-				drogtor$playerIdMap.put(player.getUuid(), ((DrogtorPlayer) player).drogtor$getNickname());
+			if (player instanceof DrogtorPlayer && ((DrogtorPlayer) player).drogtor$isNamecardActive()) {
+				drogtor$playerIdMap.put(player.getUuid(), ((DrogtorPlayer) player).drogtor$getNamecard());
 			}
 		}
 	}
@@ -32,8 +32,8 @@ public class MixinPlayerListS2CPacket {
 	@Inject(method = "<init>(Lnet/minecraft/network/packet/s2c/play/PlayerListS2CPacket$Action;Ljava/lang/Iterable;)V", at = @At("RETURN"))
 	private void cachePlayerIdsIterable(PlayerListS2CPacket.Action action, Iterable<ServerPlayerEntity> players, CallbackInfo info) {
 		for (ServerPlayerEntity player : players) {
-			if (player instanceof DrogtorPlayer && ((DrogtorPlayer) player).drogtor$isActive()) {
-				drogtor$playerIdMap.put(player.getUuid(), ((DrogtorPlayer) player).drogtor$getNickname());
+			if (player instanceof DrogtorPlayer && ((DrogtorPlayer) player).drogtor$isNamecardActive()) {
+				drogtor$playerIdMap.put(player.getUuid(), ((DrogtorPlayer) player).drogtor$getNamecard());
 			}
 		}
 	}
