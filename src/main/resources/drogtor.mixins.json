@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinPlayerEntity",
-    "MixinPlayerListS2CPacket",
     "MixinServerPlayerEntity"
   ],
   "injectors": {
