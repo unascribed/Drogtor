@@ -22,6 +22,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
+import net.fabricmc.fabric.api.util.NbtType;
+
 @Mixin(PlayerEntity.class)
 public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorPlayer {
 
@@ -30,12 +32,16 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	}
 	
 	private String drogtor$nickname;
+	private String drogtor$namecard;
 	private Formatting drogtor$namecolor;
 	
 	@Inject(at = @At("TAIL"), method = "writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V")
 	public void writeCustomDataToTag(CompoundTag tag, CallbackInfo ci) {
 		if (drogtor$nickname != null) {
 			tag.putString("drogtor:nickname", drogtor$nickname);
+		}
+		if (drogtor$namecard != null) {
+			tag.putString("drogtor:namecard", drogtor$namecard);
 		}
 		if (drogtor$namecolor != null) {
 			tag.putString("drogtor:namecolor", drogtor$namecolor.getName());
@@ -44,8 +50,9 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	
 	@Inject(at = @At("TAIL"), method = "readCustomDataFromTag(Lnet/minecraft/nbt/CompoundTag;)V")
 	public void readCustomDataFromTag(CompoundTag tag, CallbackInfo ci) {
-		drogtor$nickname = tag.contains("drogtor:nickname") ? tag.getString("drogtor:nickname") : null;
-		drogtor$namecolor = tag.contains("drogtor:namecolor") ? Formatting.byName(tag.getString("drogtor:namecolor")) : null;
+		drogtor$nickname = tag.contains("drogtor:nickname", NbtType.STRING) ? tag.getString("drogtor:nickname") : null;
+		drogtor$namecard = tag.contains("drogtor:namecard", NbtType.STRING) ? tag.getString("drogtor:namecard") : null;
+		drogtor$namecolor = tag.contains("drogtor:namecolor", NbtType.STRING) ? Formatting.byName(tag.getString("drogtor:namecolor")) : null;
 	}
 	
 	@Inject(at = @At("HEAD"), method = "getName()Lnet/minecraft/text/Text;", cancellable = true)
@@ -63,6 +70,16 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 			mut.setStyle(mut.getStyle().withColor(drogtor$getNameColor()));
 		}
 	}
+
+	@Override
+	public @Nullable String drogtor$getNickname() {
+		return drogtor$nickname;
+	}
+
+	@Override
+	public @Nullable String drogtor$getNamecard() {
+		return drogtor$namecard;
+	}
 	
 	@Override
 	public @Nullable Formatting drogtor$getNameColor() {
@@ -70,16 +87,16 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	}
 	
 	@Override
-	public @Nullable String drogtor$getNickname() {
-		return drogtor$nickname;
-	}
-	
-	@Override
 	public void drogtor$setNameColor(@Nullable Formatting fmt) {
 		drogtor$namecolor = fmt;
 		drogtor$updatePlayerListEntries();
 	}
-	
+
+	@Override
+	public void drogtor$setNamecard(String namecard) {
+		this.drogtor$namecard = namecard;
+	}
+
 	@Override
 	public void drogtor$setNickname(@Nullable String nickname) {
 		drogtor$nickname = nickname;
@@ -91,11 +108,15 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 		return drogtor$namecolor != null || drogtor$nickname != null;
 	}
 
+	@Override
+	public boolean drogtor$isNamecardActive() {
+		return drogtor$namecard != null;
+	}
+
 	private void drogtor$updatePlayerListEntries() {
 		if (((PlayerEntity)(Object)this) instanceof ServerPlayerEntity) {
 			world.getServer().getPlayerManager().sendToAll(new PlayerListS2CPacket(Action.UPDATE_DISPLAY_NAME, ((ServerPlayerEntity)(Object)this)));
 		}
 	}
-	
 
 }
