@@ -42,7 +42,7 @@ public class MixinPlayerListS2CPacket {
 	 * @author b0undarybreaker
 	 * @reason Replace the string ID in the sync packet with the Drogtor nickname
 	 */
-	@Redirect(method = "write", at = @At(value = "INVOKE", target = "Lcom/mojang/authlib/GameProfile;getName()Ljava/lang/String;"))
+	@Redirect(method = "write", at = @At(value = "INVOKE", target = "com/mojang/authlib/GameProfile.getName()Ljava/lang/String;"))
 	private String replacePlayerName(GameProfile profile) {
 		return drogtor$playerIdMap.getOrDefault(profile.getId(), profile.getName());
 	}

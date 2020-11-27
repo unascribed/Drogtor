@@ -90,7 +90,7 @@ public class DrogtorMod implements ModInitializer {
 	private void informNamecard(ServerPlayerEntity player) {
 		String nc = ((DrogtorPlayer)player).drogtor$getNamecard();
 		if (nc != null) {
-			player.sendMessage(new LiteralText("Your namecard is now ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)).append(nc, false));
+			player.sendMessage(new LiteralText("Your namecard is now ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)).append(nc), false);
 		}
 	}
 }
