@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,7 +16,7 @@ import net.minecraft.util.Formatting;
 public class DrogtorMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
-		CommandRegistrationCallback.EVENT.register((dispatcher, dedi) -> {
+		CommandRegistration.register((dispatcher, dedi) -> {
 			dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("nick")
 					.then(RequiredArgumentBuilder.<ServerCommandSource, String>argument("nick", StringArgumentType.greedyString())
 							.executes((c) -> {

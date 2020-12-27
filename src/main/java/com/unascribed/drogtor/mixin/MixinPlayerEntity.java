@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.unascribed.drogtor.DrogtorPlayer;
+import com.unascribed.drogtor.ForgeHelper;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -114,6 +115,7 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	}
 
 	private void drogtor$updatePlayerListEntries() {
+		ForgeHelper.refreshDisplayName((PlayerEntity)(Object)this);
 		if (((PlayerEntity)(Object)this) instanceof ServerPlayerEntity) {
 			world.getServer().getPlayerManager().sendToAll(new PlayerListS2CPacket(Action.UPDATE_DISPLAY_NAME, ((ServerPlayerEntity)(Object)this)));
 		}
