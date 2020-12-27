@@ -27,7 +27,7 @@ public class MixinPlayerManager {
 				subject.sendToAll(new GameMessageS2CPacket(msg, type, senderUuid));
 				subject.getServer().sendSystemMessage(new TranslatableText("multiplayer.player.joined", player.getGameProfile().getName()), senderUuid);
 				return;
-			} else if ("multiplayer.player.joined".equals(key)) {
+			} else if ("multiplayer.player.joined.renamed".equals(key)) {
 				subject.sendToAll(new GameMessageS2CPacket(msg, type, senderUuid));
 				subject.getServer().sendSystemMessage(new TranslatableText("multiplayer.player.joined.renamed", player.getGameProfile().getName(), tt.getArgs()[1]), senderUuid);
 				return;
