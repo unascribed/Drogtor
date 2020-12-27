@@ -7,7 +7,9 @@
   "mixins": [
     "MixinPlayerEntity",
     "MixinPlayerListS2CPacket",
-    "MixinServerPlayerEntity"
+    "MixinServerPlayerEntity",
+    "MixinPlayerManager",
+    "MixinServerPlayNetworkHandler"
   ],
   "injectors": {
     "defaultRequire": 1
