@@ -25,20 +25,12 @@ public class DrogtorMod implements ModInitializer {
 								String newDn = c.getArgument("nick", String.class).replace("§", "");
 								((DrogtorPlayer) c.getSource().getPlayer()).drogtor$setNickname(newDn);
 								informDisplayName(c.getSource().getPlayer(), oldDn);
-								if (newDn.length() <= 16) {
-									((DrogtorPlayer) c.getSource().getPlayer()).drogtor$setNamecard(newDn);
-									informNamecard(c.getSource().getPlayer());
-								} else {
-									c.getSource().sendFeedback(new LiteralText("Your display name is longer than 16 characters! Please use `/namecard` to set your namecard due to vanilla limitations").formatted(Formatting.YELLOW), false);
-								}
 								return 1;
 							}))
 					.executes((c) -> {
 						Text oldDn = c.getSource().getPlayer().getDisplayName();
 						((DrogtorPlayer)c.getSource().getPlayer()).drogtor$setNickname(null);
-						((DrogtorPlayer)c.getSource().getPlayer()).drogtor$setNamecard(null);
 						informDisplayName(c.getSource().getPlayer(), oldDn);
-						informNamecard(c.getSource().getPlayer());
 						return 1;
 					}));
 			dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("color")
@@ -55,24 +47,6 @@ public class DrogtorMod implements ModInitializer {
 						informDisplayName(c.getSource().getPlayer(), null);
 						return 1;
 					}));
-			dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("namecard")
-					.then(RequiredArgumentBuilder.<ServerCommandSource, String>argument("namecard", StringArgumentType.greedyString())
-							.executes((c) -> {
-								// replace § just in case
-								String namecard = c.getArgument("namecard", String.class).replace("§", "");
-								if (namecard.length() > 16) {
-									c.getSource().sendError(new LiteralText("Namecard must be 16 or fewer characters due to vanilla limitations"));
-									return 0;
-								}
-								((DrogtorPlayer)c.getSource().getPlayer()).drogtor$setNamecard(namecard);
-								informNamecard(c.getSource().getPlayer());
-								return 1;
-							}))
-					.executes((c) -> {
-						((DrogtorPlayer)c.getSource().getPlayer()).drogtor$setNamecard(null);
-						informNamecard(c.getSource().getPlayer());
-						return 1;
-					}));
 		});
 	}
 
@@ -83,13 +57,6 @@ public class DrogtorMod implements ModInitializer {
 			for (ServerPlayerEntity spe : player.server.getPlayerManager().getPlayerList()) {
 				if (spe != player) spe.sendMessage(t, false);
 			}
-		}
-	}
-
-	private void informNamecard(ServerPlayerEntity player) {
-		String nc = ((DrogtorPlayer)player).drogtor$getNamecard();
-		if (nc != null) {
-			player.sendMessage(new LiteralText("Your namecard is now ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)).append(nc), false);
 		}
 	}
 }

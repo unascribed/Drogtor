@@ -13,7 +13,7 @@ import com.unascribed.drogtor.ForgeHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Action;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,26 +33,21 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	}
 	
 	private String drogtor$nickname;
-	private String drogtor$namecard;
 	private Formatting drogtor$namecolor;
 	
-	@Inject(at = @At("TAIL"), method = "writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V")
-	public void writeCustomDataToTag(CompoundTag tag, CallbackInfo ci) {
+	@Inject(at = @At("TAIL"), method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V")
+	public void writeCustomDataToNbt(NbtCompound tag, CallbackInfo ci) {
 		if (drogtor$nickname != null) {
 			tag.putString("drogtor:nickname", drogtor$nickname);
-		}
-		if (drogtor$namecard != null) {
-			tag.putString("drogtor:namecard", drogtor$namecard);
 		}
 		if (drogtor$namecolor != null) {
 			tag.putString("drogtor:namecolor", drogtor$namecolor.getName());
 		}
 	}
 	
-	@Inject(at = @At("TAIL"), method = "readCustomDataFromTag(Lnet/minecraft/nbt/CompoundTag;)V")
-	public void readCustomDataFromTag(CompoundTag tag, CallbackInfo ci) {
+	@Inject(at = @At("TAIL"), method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V")
+	public void readCustomDataFromNbt(NbtCompound tag, CallbackInfo ci) {
 		drogtor$nickname = tag.contains("drogtor:nickname", NbtType.STRING) ? tag.getString("drogtor:nickname") : null;
-		drogtor$namecard = tag.contains("drogtor:namecard", NbtType.STRING) ? tag.getString("drogtor:namecard") : null;
 		drogtor$namecolor = tag.contains("drogtor:namecolor", NbtType.STRING) ? Formatting.byName(tag.getString("drogtor:namecolor")) : null;
 	}
 	
@@ -78,11 +73,6 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	}
 
 	@Override
-	public @Nullable String drogtor$getNamecard() {
-		return drogtor$namecard;
-	}
-	
-	@Override
 	public @Nullable Formatting drogtor$getNameColor() {
 		return drogtor$namecolor;
 	}
@@ -94,11 +84,6 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	}
 
 	@Override
-	public void drogtor$setNamecard(String namecard) {
-		this.drogtor$namecard = namecard;
-	}
-
-	@Override
 	public void drogtor$setNickname(@Nullable String nickname) {
 		drogtor$nickname = nickname;
 		drogtor$updatePlayerListEntries();
@@ -107,11 +92,6 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	@Override
 	public boolean drogtor$isActive() {
 		return drogtor$namecolor != null || drogtor$nickname != null;
-	}
-
-	@Override
-	public boolean drogtor$isNamecardActive() {
-		return drogtor$namecard != null;
 	}
 
 	private void drogtor$updatePlayerListEntries() {
