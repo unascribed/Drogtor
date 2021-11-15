@@ -1,5 +1,7 @@
 package com.unascribed.drogtor;
 
+import java.util.regex.Pattern;
+
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -73,6 +75,29 @@ public class DrogtorMod implements ModInitializer {
 						informNamecard(c.getSource().getPlayer());
 						return 1;
 					}));
+			dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("bio")
+					.then(RequiredArgumentBuilder.<ServerCommandSource, String>argument("bio", StringArgumentType.greedyString())
+							.executes((c) -> {
+								// replace § just in case
+								String bio = c.getArgument("bio", String.class).replace("§", "");
+								bio = Pattern.compile("\\\\.").matcher(bio).replaceAll(res -> {
+									String s = res.group().substring(1);
+									if (s.equals("n")) {
+										return "\n";
+									} else if (s.equals("\\")) {
+										return "\\\\";
+									}
+									return s;
+								});
+								((DrogtorPlayer) c.getSource().getPlayer()).drogtor$setBio(bio);
+								informBio(c.getSource().getPlayer());
+								return 1;
+							}))
+					.executes((c) -> {
+						((DrogtorPlayer)c.getSource().getPlayer()).drogtor$setBio(null);
+						informBio(c.getSource().getPlayer());
+						return 1;
+					}));
 		});
 	}
 
@@ -90,6 +115,13 @@ public class DrogtorMod implements ModInitializer {
 		String nc = ((DrogtorPlayer)player).drogtor$getNamecard();
 		if (nc != null) {
 			player.sendMessage(new LiteralText("Your namecard is now ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)).append(nc), false);
+		}
+	}
+
+	private void informBio(ServerPlayerEntity player) {
+		String bio = ((DrogtorPlayer)player).drogtor$getBio();
+		if (bio != null) {
+			player.sendMessage(new LiteralText("Your bio is now:\n").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)).append(bio), false);
 		}
 	}
 }
