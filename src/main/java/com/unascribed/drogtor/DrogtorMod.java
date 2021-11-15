@@ -16,6 +16,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class DrogtorMod implements ModInitializer {
+	private static final Pattern ESCAPE_PATTERN = Pattern.compile("\\\\.");
+	
 	@Override
 	public void onInitialize() {
 		CommandRegistration.register((dispatcher, dedi) -> {
@@ -80,7 +82,7 @@ public class DrogtorMod implements ModInitializer {
 							.executes((c) -> {
 								// replace § just in case
 								String bio = c.getArgument("bio", String.class).replace("§", "");
-								bio = Pattern.compile("\\\\.").matcher(bio).replaceAll(res -> {
+								bio = ESCAPE_PATTERN.matcher(bio).replaceAll(res -> {
 									String s = res.group().substring(1);
 									if (s.equals("n")) {
 										return "\n";
