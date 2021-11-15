@@ -1,5 +1,8 @@
 package com.unascribed.drogtor.mixin;
 
+import com.unascribed.drogtor.DrogtorPlayer;
+import com.unascribed.drogtor.ForgeHelper;
+
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -7,9 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.unascribed.drogtor.DrogtorPlayer;
-import com.unascribed.drogtor.ForgeHelper;
-
+import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,13 +18,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Action;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
-
-import net.fabricmc.fabric.api.util.NbtType;
 
 @Mixin(PlayerEntity.class)
 public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorPlayer {
@@ -34,6 +34,7 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	
 	private String drogtor$nickname;
 	private Formatting drogtor$namecolor;
+	private String drogtor$bio;
 	
 	@Inject(at = @At("TAIL"), method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V")
 	public void writeCustomDataToNbt(NbtCompound tag, CallbackInfo ci) {
@@ -43,12 +44,16 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 		if (drogtor$namecolor != null) {
 			tag.putString("drogtor:namecolor", drogtor$namecolor.getName());
 		}
+		if (drogtor$bio != null) {
+			tag.putString("drogtor:bio", drogtor$bio);
+		}
 	}
 	
 	@Inject(at = @At("TAIL"), method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V")
 	public void readCustomDataFromNbt(NbtCompound tag, CallbackInfo ci) {
 		drogtor$nickname = tag.contains("drogtor:nickname", NbtType.STRING) ? tag.getString("drogtor:nickname") : null;
 		drogtor$namecolor = tag.contains("drogtor:namecolor", NbtType.STRING) ? Formatting.byName(tag.getString("drogtor:namecolor")) : null;
+		drogtor$bio = tag.contains("drogtor:bio", NbtType.STRING) ? tag.getString("drogtor:bio") : null;
 	}
 	
 	@Inject(at = @At("HEAD"), method = "getName()Lnet/minecraft/text/Text;", cancellable = true)
@@ -61,9 +66,12 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	
 	@Inject(at = @At("RETURN"), method = "getDisplayName()Lnet/minecraft/text/Text;")
 	public void getDisplayName(CallbackInfoReturnable<Text> ci) {
+		MutableText mut = (MutableText)ci.getReturnValue();
 		if (drogtor$getNameColor() != null) {
-			MutableText mut = (MutableText)ci.getReturnValue();
 			mut.setStyle(mut.getStyle().withColor(drogtor$getNameColor()));
+		}
+		if (drogtor$getBio() != null) {
+			mut.setStyle(mut.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(drogtor$getBio()))));
 		}
 	}
 
@@ -76,6 +84,11 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	public @Nullable Formatting drogtor$getNameColor() {
 		return drogtor$namecolor;
 	}
+
+	@Override
+	public @Nullable String drogtor$getBio() {
+		return drogtor$bio;
+	}
 	
 	@Override
 	public void drogtor$setNameColor(@Nullable Formatting fmt) {
@@ -87,6 +100,11 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	public void drogtor$setNickname(@Nullable String nickname) {
 		drogtor$nickname = nickname;
 		drogtor$updatePlayerListEntries();
+	}
+
+	@Override
+	public void drogtor$setBio(@Nullable String bio) {
+		drogtor$bio = bio;
 	}
 	
 	@Override
