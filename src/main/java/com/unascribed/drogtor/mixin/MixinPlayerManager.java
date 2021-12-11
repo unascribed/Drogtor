@@ -17,11 +17,12 @@ import net.minecraft.text.TranslatableText;
 @Mixin(PlayerManager.class)
 public class MixinPlayerManager {
 
-	@Redirect(at=@At(value="INVOKE", target="net/minecraft/server/PlayerManager.broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"),
+	@Redirect(at=@At(value="INVOKE", target="net/minecraft/server/PlayerManager.broadcast(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"),
 			method="onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V")
-	public void broadcastChatMessage(PlayerManager subject, Text msg, MessageType type, UUID senderUuid, ClientConnection conn, ServerPlayerEntity player) {
+	public void broadcast(PlayerManager subject, Text msg, MessageType type, UUID senderUuid, ClientConnection conn, ServerPlayerEntity player) {
 		if (msg instanceof TranslatableText) {
-			TranslatableText tt = ((TranslatableText)msg);
+			TranslatableText tt;
+			tt = ((TranslatableText)msg);
 			String key = tt.getKey();
 			if ("multiplayer.player.joined".equals(key)) {
 				subject.sendToAll(new GameMessageS2CPacket(msg, type, senderUuid));
@@ -33,7 +34,7 @@ public class MixinPlayerManager {
 				return;
 			}
 		}
-		subject.broadcastChatMessage(msg, type, senderUuid);
+		subject.broadcast(msg, type, senderUuid);
 	}
 	
 }

@@ -21,11 +21,12 @@ public class MixinServerPlayNetworkHandler {
 	@Shadow
 	public ServerPlayerEntity player;
 	
-	@Redirect(at=@At(value="INVOKE", target="net/minecraft/server/PlayerManager.broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"),
+	@Redirect(at=@At(value="INVOKE", target="net/minecraft/server/PlayerManager.broadcast(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"),
 			method="onDisconnected(Lnet/minecraft/text/Text;)V")
-	public void broadcastChatMessage(PlayerManager subject, Text msg, MessageType type, UUID senderUuid) {
+	public void broadcast(PlayerManager subject, Text msg, MessageType type, UUID senderUuid) {
 		if (msg instanceof TranslatableText) {
-			TranslatableText tt = ((TranslatableText)msg);
+			TranslatableText tt;
+			tt = ((TranslatableText)msg);
 			String key = tt.getKey();
 			if ("multiplayer.player.left".equals(key)) {
 				subject.sendToAll(new GameMessageS2CPacket(msg, type, senderUuid));
@@ -33,7 +34,7 @@ public class MixinServerPlayNetworkHandler {
 				return;
 			}
 		}
-		subject.broadcastChatMessage(msg, type, senderUuid);
+		subject.broadcast(msg, type, senderUuid);
 	}
 	
 }
