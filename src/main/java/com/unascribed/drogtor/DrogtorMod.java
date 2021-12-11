@@ -117,10 +117,4 @@ public class DrogtorMod implements ModInitializer {
 		}
 	}
 
-	private void informBio(ServerPlayerEntity player) {
-		String bio = ((DrogtorPlayer)player).drogtor$getBio();
-		if (bio != null) {
-			player.sendMessage(new LiteralText("Your bio is now:\n").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)).append(bio), false);
-		}
-	}
 }
