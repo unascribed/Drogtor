@@ -1,22 +1,23 @@
 #!/bin/bash -e
-if [ -f ~/ForgeryTools.jar ]; then
-	canforgery=1
-else
-	echo "Forgery tools not found. As of the time of writing, the Forgery tooling is not public."
-	echo "Performing a Fabric build only."
-	echo
-	canforgery=0
-fi
+#if [ -f ~/ForgeryTools.jar ]; then
+#       canforgery=1
+#else
+#       echo "Forgery tools not found. As of the time of writing, the Forgery tooling is not public."
+        echo "Forgery does not yet support 1.17."
+        echo "Performing a Fabric build only."
+        echo
+        canforgery=0
+#fi
 rm -rf build/libs
 echo Building for Fabric...
-gw build
+./gradlew build
 rm build/libs/*-dev.jar
 artifact=$(echo build/libs/*.jar)
-mv "$artifact" $(echo "$artifact" |sed 's/-/-Fabric-1.16-/' |sed 's/drogtor/Drogtor/')
+mv "$artifact" $(echo "$artifact" |sed 's/-/-Fabric-1.17-/' |sed 's/drogtor/Drogtor/')
 if [ "$canforgery" == "1" ]; then
 	cd forgery
 	echo Building Forgery runtime...
-	gw build
+	./gradlew build
 	cd ..
 	fabric=$(echo build/libs/Drogtor-Fabric*.jar)
 	forge=$(echo "$fabric" | sed "s/Fabric/Forge/")

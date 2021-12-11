@@ -36,7 +36,6 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity {
 				DrogtorPlayer us = (DrogtorPlayer)this;
 				DrogtorPlayer them = (DrogtorPlayer)oldPlayer;
 				us.drogtor$setNickname(them.drogtor$getNickname());
-				us.drogtor$setNamecard(them.drogtor$getNamecard());
 				us.drogtor$setNameColor(them.drogtor$getNameColor());
 				us.drogtor$setBio(them.drogtor$getBio());
 			}
