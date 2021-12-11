@@ -6,8 +6,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
+import com.unascribed.drogtor.mixin.MixinPlayerManager;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.command.argument.ColorArgumentType;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -27,7 +29,9 @@ public class DrogtorMod implements ModInitializer {
 								// replace § just in case
 								Text oldDn = c.getSource().getPlayer().getDisplayName();
 								String newDn = c.getArgument("nick", String.class).replace("§", "");
+								Text newNameMsg = Text.of(c.getSource().getPlayer().getGameProfile().getName() + " changed nickname to: " + newDn);
 								((DrogtorPlayer) c.getSource().getPlayer()).drogtor$setNickname(newDn);
+								c.getSource().getServer().sendSystemMessage(newNameMsg, c.getSource().getPlayer().getUuid());
 								informDisplayName(c.getSource().getPlayer(), oldDn);
 								return 1;
 							}))
@@ -35,6 +39,8 @@ public class DrogtorMod implements ModInitializer {
 						Text oldDn = c.getSource().getPlayer().getDisplayName();
 						((DrogtorPlayer)c.getSource().getPlayer()).drogtor$setNickname(null);
 						informDisplayName(c.getSource().getPlayer(), oldDn);
+						Text newNameMsg = Text.of(c.getSource().getPlayer().getGameProfile().getName() + " got rid of their nickname");
+						c.getSource().getServer().sendSystemMessage(newNameMsg, c.getSource().getPlayer().getUuid());
 						return 1;
 					}));
 			dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("color")
