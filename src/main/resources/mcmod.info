@@ -1,0 +1,12 @@
+[
+{
+  "modid": "drogtor",
+  "name": "Drogtor",
+  "description": "Nickinate the ancient countryside",
+  "url": "https://www.curseforge.com/minecraft/mc-mods/drogtor",
+  "version": "${version}",
+  "mcversion": "1.4.7",
+  "authorList": ["unascribed"],
+  "logoFile": "drogtor-icon.png"
+}
+]
