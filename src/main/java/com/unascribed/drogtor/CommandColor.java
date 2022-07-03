@@ -21,12 +21,17 @@ public class CommandColor extends CommandBase {
 	public int getRequiredPermissionLevel() {
 		return 0;
 	}
+	
+	@Override
+	public boolean canCommandSenderUseCommand(ICommandSender iCommandSender) {
+		return true;
+	}
 
 	@Override
 	public void processCommand(ICommandSender ics, String[] args) {
 		EntityPlayer p = getCommandSenderAsPlayer(ics);
 		if (args.length == 0) {
-			p.getEntityData().removeTag("drogtor:color");
+			Drogtor.getPersisted(p).removeTag("drogtor:color");
 			p.sendChatToPlayer("§eYour display name is now§r "+Drogtor.getColoredNick(p));
 			return;
 		}
@@ -82,7 +87,7 @@ public class CommandColor extends CommandBase {
 			default:
 				throw new CommandException("Unknown color");
 		}
-		p.getEntityData().setString("drogtor:color", color);
+		Drogtor.getPersisted(p).setString("drogtor:color", color);
 		p.sendChatToPlayer("§eYour display name is now§r "+Drogtor.getColoredNick(p));
 	}
 	

@@ -3,11 +3,11 @@ buildscript {
 		mavenCentral()
 		gradlePluginPortal()
 		maven { url 'https://maven.fabricmc.net' }
-		maven { url 'https://jitpack.io' }
+		maven { url 'https://repo.sleeping.town' }
 		maven { url 'https://maven.minecraftforge.net/' }
 	}
 	dependencies {
-		classpath 'com.github.unascribed.voldeloom:fabric-loom:1.4.7-SNAPSHOT'
+		classpath 'com.unascribed:voldeloom:1.0+1.4.7'
 		classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
 		classpath 'me.tatarka:gradle-retrolambda:3.7.1'
 	}
@@ -15,19 +15,10 @@ buildscript {
 
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
-apply plugin: 'fabric-loom'
+apply plugin: 'com.unascribed.voldeloom'
 
 sourceCompatibility = 7
 targetCompatibility = 7
-
-def mcp = "mcp726a.zip";
-
-if (!file(mcp).exists()) {
-	println "Downloading ${mcp} from archive.org..."
-	file(mcp).withOutputStream {
-		it << new URL("https://archive.org/download/minecraftcoderpack/minecraftcoderpack.zip/minecraftcoderpack%2F${project.minecraft_version}%2F${mcp}").openStream()
-	}
-}
 
 archivesBaseName = project.archives_base_name
 version = project.version
@@ -53,7 +44,7 @@ configurations {
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	forge "net.minecraftforge:forge:1.4.7-6.6.2.534:universal@zip"
-	mappings files(mcp)
+	mappings files('mcp726a-forged.zip')
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 }
 

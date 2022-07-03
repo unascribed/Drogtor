@@ -16,13 +16,18 @@ public class CommandNick extends CommandBase {
 	public int getRequiredPermissionLevel() {
 		return 0;
 	}
+	
+	@Override
+	public boolean canCommandSenderUseCommand(ICommandSender iCommandSender) {
+		return true;
+	}
 
 	@Override
 	public void processCommand(ICommandSender ics, String[] args) {
 		EntityPlayer p = getCommandSenderAsPlayer(ics);
 		String old = Drogtor.getColoredNick(p);
 		if (args.length == 0) {
-			p.getEntityData().removeTag("drogtor:nick");
+			Drogtor.getPersisted(p).removeTag("drogtor:nick");
 			Drogtor.notifyChange(old, p);
 			return;
 		}
@@ -33,7 +38,7 @@ public class CommandNick extends CommandBase {
 		}
 		sb.setLength(sb.length()-1);
 		String nick = sb.toString();
-		p.getEntityData().setString("drogtor:nick", nick);
+		Drogtor.getPersisted(p).setString("drogtor:nick", nick);
 		Drogtor.notifyChange(old, p);
 	}
 

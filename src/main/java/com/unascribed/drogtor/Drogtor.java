@@ -9,6 +9,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.ServerChatEvent;
@@ -27,23 +28,34 @@ public class Drogtor {
 		e.registerServerCommand(new CommandColor());
 	}
 	
+	public static NBTTagCompound getPersisted(EntityPlayer p) {
+		NBTTagCompound base = getPersisted(p);
+		if (base.hasKey(EntityPlayer.PERSISTED_NBT_TAG)) {
+			return base.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+		}
+		NBTTagCompound persisted = new NBTTagCompound();
+		base.setCompoundTag(EntityPlayer.PERSISTED_NBT_TAG, persisted);
+		return persisted;
+	}
+	
 	@ForgeSubscribe
 	public void onChat(ServerChatEvent e) {
-		if (e.player.getEntityData().hasKey("drogtor:nick") || e.player.getEntityData().hasKey("drogtor:color")) {
+		if (getPersisted(e.player).hasKey("drogtor:nick") || getPersisted(e.player).hasKey("drogtor:color")) {
 			String nick = getColoredNick(e.player);
 			String needle = "<"+e.username+">";
 			Pattern p = Pattern.compile(needle, Pattern.LITERAL);
 			e.line = p.matcher(e.line).replaceFirst(Matcher.quoteReplacement("<"+nick+"§r>"));
 		}
 	}
+	
 
 	public static String getColoredNick(EntityPlayer p) {
 		String nick = p.getCommandSenderName();
-		if (p.getEntityData().hasKey("drogtor:nick")) {
-			nick = p.getEntityData().getString("drogtor:nick");
+		if (getPersisted(p).hasKey("drogtor:nick")) {
+			nick = getPersisted(p).getString("drogtor:nick");
 		}
-		if (p.getEntityData().hasKey("drogtor:color")) {
-			nick = "§"+p.getEntityData().getString("drogtor:color")+nick;
+		if (getPersisted(p).hasKey("drogtor:color")) {
+			nick = "§"+getPersisted(p).getString("drogtor:color")+nick;
 		}
 		return nick;
 	}
