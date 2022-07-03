@@ -29,7 +29,7 @@ public class Drogtor {
 	}
 	
 	public static NBTTagCompound getPersisted(EntityPlayer p) {
-		NBTTagCompound base = getPersisted(p);
+		NBTTagCompound base = p.getEntityData();
 		if (base.hasKey(EntityPlayer.PERSISTED_NBT_TAG)) {
 			return base.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
 		}
