@@ -1,7 +1,6 @@
 package com.unascribed.drogtor.mixin;
 
 import com.unascribed.drogtor.DrogtorPlayer;
-import com.unascribed.drogtor.ForgeHelper;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +18,6 @@ import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Action;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -60,7 +58,7 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	public void getName(CallbackInfoReturnable<Text> ci) {
 		String nick = drogtor$getNickname();
 		if (nick != null) {
-			ci.setReturnValue(new LiteralText(nick));
+			ci.setReturnValue(Text.literal(nick));
 		}
 	}
 	
@@ -71,7 +69,7 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 			mut.setStyle(mut.getStyle().withColor(drogtor$getNameColor()));
 		}
 		if (drogtor$getBio() != null) {
-			mut.setStyle(mut.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(drogtor$getBio()))));
+			mut.setStyle(mut.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(drogtor$getBio()))));
 		}
 	}
 
@@ -113,7 +111,6 @@ public abstract class MixinPlayerEntity extends LivingEntity implements DrogtorP
 	}
 
 	private void drogtor$updatePlayerListEntries() {
-		ForgeHelper.refreshDisplayName((PlayerEntity)(Object)this);
 		if (((PlayerEntity)(Object)this) instanceof ServerPlayerEntity) {
 			world.getServer().getPlayerManager().sendToAll(new PlayerListS2CPacket(Action.UPDATE_DISPLAY_NAME, ((ServerPlayerEntity)(Object)this)));
 		}

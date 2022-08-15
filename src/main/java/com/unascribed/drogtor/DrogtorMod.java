@@ -10,9 +10,8 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 
 public class DrogtorMod implements ModInitializer {
@@ -20,7 +19,7 @@ public class DrogtorMod implements ModInitializer {
 	
 	@Override
 	public void onInitialize() {
-		CommandRegistration.register((dispatcher, dedi) -> {
+		CommandRegistration.register((dispatcher, registryAccess, environment) -> {
 			dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>literal("nick")
 					.then(RequiredArgumentBuilder.<ServerCommandSource, String>argument("nick", StringArgumentType.greedyString())
 							.executes((c) -> {
@@ -78,9 +77,9 @@ public class DrogtorMod implements ModInitializer {
 	}
 
 	private void informDisplayName(ServerPlayerEntity player, Text oldDn) {
-		player.sendMessage(new LiteralText("Your display name is now ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)).append(player.getDisplayName()), false);
+		player.sendMessage(Text.literal("Your display name is now ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)).append(player.getDisplayName()), false);
 		if (oldDn != null) {
-			Text t = oldDn.shallowCopy().append(new LiteralText(" is now known as ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW))).append(player.getDisplayName());
+			Text t = oldDn.copyContentOnly().append(Text.literal(" is now known as ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW))).append(player.getDisplayName());
 			for (ServerPlayerEntity spe : player.server.getPlayerManager().getPlayerList()) {
 				if (spe != player) spe.sendMessage(t, false);
 			}
@@ -90,7 +89,7 @@ public class DrogtorMod implements ModInitializer {
 	private void informBio(ServerPlayerEntity player) {
 		String bio = ((DrogtorPlayer)player).drogtor$getBio();
 		if (bio != null) {
-			player.sendMessage(new LiteralText("Your bio is now:\n").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)).append(bio), false);
+			player.sendMessage(Text.literal("Your bio is now:\n").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)).append(bio), false);
 		}
 	}
 }

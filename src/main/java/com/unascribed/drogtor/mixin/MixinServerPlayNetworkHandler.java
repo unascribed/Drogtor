@@ -1,19 +1,16 @@
 package com.unascribed.drogtor.mixin;
 
-import java.util.UUID;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public class MixinServerPlayNetworkHandler {
@@ -21,19 +18,18 @@ public class MixinServerPlayNetworkHandler {
 	@Shadow
 	public ServerPlayerEntity player;
 	
-	@Redirect(at=@At(value="INVOKE", target="net/minecraft/server/PlayerManager.broadcastChatMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"),
+	@Redirect(at=@At(value="INVOKE", target="Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Z)V"),
 			method="onDisconnected(Lnet/minecraft/text/Text;)V")
-	public void broadcastChatMessage(PlayerManager subject, Text msg, MessageType type, UUID senderUuid) {
-		if (msg instanceof TranslatableText) {
-			TranslatableText tt = ((TranslatableText)msg);
-			String key = tt.getKey();
+	public void broadcast(PlayerManager subject, Text msg, boolean overlay, Text reason) {
+		if (msg.getContent() instanceof TranslatableTextContent ttc) {
+			String key = ttc.getKey();
 			if ("multiplayer.player.left".equals(key)) {
-				subject.sendToAll(new GameMessageS2CPacket(msg, type, senderUuid));
-				subject.getServer().sendSystemMessage(new TranslatableText("multiplayer.player.left", player.getGameProfile().getName()), senderUuid);
+				subject.sendToAll(new GameMessageS2CPacket(msg, overlay));
+				subject.getServer().sendMessage(Text.translatable("multiplayer.player.left", player.getGameProfile().getName()));
 				return;
 			}
 		}
-		subject.broadcastChatMessage(msg, type, senderUuid);
+		subject.broadcast(msg, overlay);
 	}
 	
 }
