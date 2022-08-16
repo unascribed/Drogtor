@@ -26,21 +26,17 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity {
 
 	@Inject(at = @At("HEAD"), method = "getPlayerListName()Lnet/minecraft/text/Text;", cancellable = true)
 	public void getPlayerListName(CallbackInfoReturnable<Text> ci) {
-		if (this instanceof DrogtorPlayer && (((DrogtorPlayer)this).drogtor$isActive())) {
+		if (this instanceof DrogtorPlayer us && us.drogtor$isActive()) {
 			ci.setReturnValue(Team.decorateName(this.getScoreboardTeam(), getDisplayName()));
 		}
 	}
-	
-	@Inject(at = @At("HEAD"), method = "copyFrom(Lnet/minecraft/server/network/ServerPlayerEntity;Z)V", cancellable = true)
+
+	@Inject(at = @At("HEAD"), method = "copyFrom(Lnet/minecraft/server/network/ServerPlayerEntity;Z)V")
 	public void copyFrom(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo ci) {
-		if (this instanceof DrogtorPlayer) {
-			if (oldPlayer instanceof DrogtorPlayer them) {
-				DrogtorPlayer us = (DrogtorPlayer)this;
-				us.drogtor$setNickname(them.drogtor$getNickname());
-				us.drogtor$setNameColor(them.drogtor$getNameColor());
-				us.drogtor$setBio(them.drogtor$getBio());
-			}
+		if (this instanceof DrogtorPlayer us && oldPlayer instanceof DrogtorPlayer them) {
+			us.drogtor$setNickname(them.drogtor$getNickname());
+			us.drogtor$setNameColor(them.drogtor$getNameColor());
+			us.drogtor$setBio(them.drogtor$getBio());
 		}
 	}
-	
 }
